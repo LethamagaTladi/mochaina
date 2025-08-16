@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mochaina</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <div id="app" class="min-h-screen transition-colors duration-300">
+        <!-- Header -->
+        <header id="header" class="text-white p-4 shadow-lg">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Mochaina</h1>
+                <div class="flex items-center gap-4">
+                    <span id="welcome-text" class="text-sm hidden"></span>
+                    <button id="theme-toggle" class="text-white hover:bg-white/20 p-2 rounded">
+                        <svg id="sun-icon" class="h-4 w-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg id="moon-icon" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <button id="logout-btn" class="text-white hover:bg-white/20 p-2 rounded hidden">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto p-4">
+            <!-- Registration Page -->
+            <div id="register-page" class="card max-w-2xl mx-auto mt-8">
+                <div class="card-header">
+                    <h2 class="card-title">Create Your Account</h2>
+                    <p class="card-description">Join Mochaina and start playing today!</p>
+                </div>
+                <div class="card-content">
+                    <form id="register-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="firstName" class="label">First Name(s)</label>
+                                <input id="firstName" name="firstName" type="text" class="input" required>
+                                <p class="error-text hidden" id="firstName-error"></p>
+                            </div>
+                            <div>
+                                <label for="surname" class="label">Surname</label>
+                                <input id="surname" name="surname" type="text" class="input" required>
+                                <p class="error-text hidden" id="surname-error"></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="idNumber" class="label">ID Number</label>
+                            <input id="idNumber" name="idNumber" type="text" class="input" required>
+                            <p class="error-text hidden" id="idNumber-error"></p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="email" class="label">Email</label>
+                                <input id="email" name="email" type="email" class="input" required>
+                                <p class="error-text hidden" id="email-error"></p>
+                            </div>
+                            <div>
+                                <label for="contactNumber" class="label">Contact Number</label>
+                                <input id="contactNumber" name="contactNumber" type="text" class="input" required>
+                                <p class="error-text hidden" id="contactNumber-error"></p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="password" class="label">Password</label>
+                                <input id="password" name="password" type="password" class="input" required>
+                                <p class="error-text hidden" id="password-error"></p>
+                            </div>
+                            <div>
+                                <label for="confirmPassword" class="label">Confirm Password</label>
+                                <input id="confirmPassword" name="confirmPassword" type="password" class="input" required>
+                                <p class="error-text hidden" id="confirmPassword-error"></p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="proofOfResidence" class="label">Proof of Residence (PDF)</label>
+                                <div class="file-upload">
+                                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <label for="proofOfResidence" class="upload-label">Upload a file</label>
+                                    <input id="proofOfResidence" name="proofOfResidence" type="file" accept=".pdf" class="file-input">
+                                    <p class="upload-text">PDF up to 10MB</p>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="certifiedIdCopy" class="label">Certified ID Copy (PDF)</label>
+                                <div class="file-upload">
+                                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <label for="certifiedIdCopy" class="upload-label">Upload a file</label>
+                                    <input id="certifiedIdCopy" name="certifiedIdCopy" type="file" accept=".pdf" class="file-input">
+                                    <p class="upload-text">PDF up to 10MB</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-full">Register</button>
+
+                        <div class="text-center">
+                            <button type="button" id="go-to-login" class="btn-link">
+                                Already have an account? Login here
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Login Page -->
+            <div id="login-page" class="card max-w-md mx-auto mt-8 hidden">
+                <div class="card-header">
+                    <h2 class="card-title">Welcome Back</h2>
+                    <p class="card-description">Login to your Mochaina account</p>
+                </div>
+                <div class="card-content">
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label for="emailOrPhone" class="label">Email or Contact Number</label>
+                            <input id="emailOrPhone" name="emailOrPhone" type="text" class="input" required>
+                        </div>
+                        <div>
+                            <label for="loginPassword" class="label">Password</label>
+                            <input id="loginPassword" name="password" type="password" class="input" required>
+                        </div>
+                        <div id="login-error" class="alert alert-error hidden">
+                            <p></p>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full">Login</button>
+                        <div class="text-center">
+                            <button type="button" id="go-to-register" class="btn-link">
+                                Don't have an account? Register here
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Wallet & Game Pages -->
+            <div id="main-app" class="mt-8 space-y-6 hidden">
+                <!-- Navigation -->
+                <div class="flex justify-center space-x-4">
+                    <button id="wallet-nav" class="btn btn-primary">Wallet</button>
+                    <button id="game-nav" class="btn btn-outline">Play Mochaina</button>
+                </div>
+
+                <!-- Balance Display -->
+                <div class="card max-w-md mx-auto">
+                    <div class="card-header">
+                        <h2 class="card-title text-center">Current Balance</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="text-center">
+                            <span id="balance-display" class="text-3xl font-bold">R0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallet Page -->
+                <div id="wallet-page" class="card max-w-md mx-auto">
+                    <div class="card-header">
+                        <h2 class="card-title">Manage Your Wallet</h2>
+                        <p class="card-description">Secure payments powered by Stripe</p>
+                    </div>
+                    <div class="card-content space-y-4">
+                        <div>
+                            <label class="label">Payment Method</label>
+                            <div class="flex gap-2 mt-2">
+                                <button id="card-method" class="btn btn-primary btn-sm flex items-center gap-2">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                                    </svg>
+                                    Card
+                                </button>
+                                <button id="bank-method" class="btn btn-outline btn-sm">Bank Transfer</button>
+                            </div>
+                        </div>
+
+                        <!-- Card Payment Section -->
+                        <div id="card-section" class="space-y-4">
+                            <div id="saved-cards" class="hidden">
+                                <label class="label">Select Card</label>
+                                <div id="cards-list" class="space-y-2 mt-2"></div>
+                            </div>
+
+                            <div>
+                                <button id="add-card-btn" class="btn btn-outline w-full">
+                                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Add New Card
+                                </button>
+                            </div>
+
+                            <div id="add-card-form" class="space-y-4 p-4 border rounded-lg bg-gray-50 hidden">
+                                <div>
+                                    <label for="cardNumber" class="label">Card Number</label>
+                                    <input id="cardNumber" type="text" placeholder="1234 5678 9012 3456" class="input">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="cardExpiry" class="label">Expiry Date</label>
+                                        <input id="cardExpiry" type="text" placeholder="MM/YY" class="input">
+                                    </div>
+                                    <div>
+                                        <label for="cardCvc" class="label">CVC</label>
+                                        <input id="cardCvc" type="text" placeholder="123" class="input">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="cardName" class="label">Cardholder Name</label>
+                                    <input id="cardName" type="text" placeholder="John Doe" class="input">
+                                </div>
+                                <button id="add-card-submit" class="btn btn-primary w-full">Add Card</button>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer Section -->
+                        <div id="bank-section" class="space-y-4 hidden">
+                            <div>
+                                <label for="bankName" class="label">Bank Name</label>
+                                <select id="bankName" class="input">
+                                    <option value="">Select your bank</option>
+                                    <option value="ABSA Bank">ABSA Bank</option>
+                                    <option value="Standard Bank">Standard Bank</option>
+                                    <option value="First National Bank (FNB)">First National Bank (FNB)</option>
+                                    <option value="Nedbank">Nedbank</option>
+                                    <option value="Capitec Bank">Capitec Bank</option>
+                                    <option value="African Bank">African Bank</option>
+                                    <option value="Investec Bank">Investec Bank</option>
+                                    <option value="Discovery Bank">Discovery Bank</option>
+                                    <option value="Bidvest Bank">Bidvest Bank</option>
+                                    <option value="Sasfin Bank">Sasfin Bank</option>
+                                    <option value="Mercantile Bank">Mercantile Bank</option>
+                                    <option value="Grindrod Bank">Grindrod Bank</option>
+                                    <option value="Ithala Development Finance Corporation">Ithala Development Finance Corporation</option>
+                                    <option value="Bank Zero">Bank Zero</option>
+                                    <option value="TymeBank">TymeBank</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="accountHolder" class="label">Account Holder Name</label>
+                                <input id="accountHolder" type="text" placeholder="Full name as on bank account" class="input">
+                            </div>
+                            <div>
+                                <label for="accountNumber" class="label">Account Number</label>
+                                <input id="accountNumber" type="text" placeholder="Enter your account number" class="input">
+                                <p class="text-xs text-gray-500 mt-1">Enter your full account number (minimum 8 digits)</p>
+                            </div>
+                            <div id="bank-error" class="alert alert-error hidden">
+                                <p></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="walletAmount" class="label">Amount (R)</label>
+                            <input id="walletAmount" type="number" step="0.01" min="0" class="input">
+                            <p class="text-xs text-gray-500 mt-1">Min deposit: R10.00, Min withdrawal: R50.00</p>
+                        </div>
+
+                        <div id="stripe-loading" class="alert hidden">
+                            <div class="flex items-center">
+                                <div class="spinner mr-2"></div>
+                                <p>Loading payment system...</p>
+                            </div>
+                        </div>
+
+                        <div id="wallet-error" class="alert alert-error hidden">
+                            <p></p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="deposit-btn" class="btn btn-primary">Deposit</button>
+                            <button id="withdraw-btn" class="btn btn-outline">Withdraw</button>
+                        </div>
+
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p><strong>Card Payments:</strong> Instant processing via Stripe</p>
+                            <p><strong>Bank Transfer:</strong> 1-3 business days processing time</p>
+                            <p>All transactions are secured with industry-standard encryption</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Page -->
+                <div id="game-page" class="space-y-6 hidden">
+                    <!-- Current Draw Results -->
+                    <div id="current-draw" class="card max-w-4xl mx-auto hidden">
+                        <div class="card-header">
+                            <h2 class="card-title">Current Draw Results</h2>
+                            <p id="draw-time" class="card-description"></p>
+                        </div>
+                        <div class="card-content">
+                            <div class="text-center space-y-4">
+                                <div class="flex justify-center space-x-4">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Winning Numbers</p>
+                                        <div id="winning-numbers" class="flex space-x-2"></div>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Bonus Number</p>
+                                        <div id="bonus-number" class="number-ball bonus-ball"></div>
+                                    </div>
+                                </div>
+                                <p id="next-draw-time" class="text-sm text-gray-600"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Draw History -->
+                    <div id="draw-history" class="card max-w-4xl mx-auto hidden">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Draw History</h2>
+                            <p class="card-description">Last draws</p>
+                        </div>
+                        <div class="card-content">
+                            <div id="history-list" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Game Interface -->
+                    <div class="card max-w-4xl mx-auto">
+                        <div class="card-header">
+                            <h2 class="card-title">Mochaina Game</h2>
+                            <p class="card-description">
+                                Select 3 main numbers (1-50) and 1 bonus number (1-9). Each play costs R3.00. 
+                                Win R40.00 for 3 main numbers, or R47.00 for 3 main + bonus!<br>
+                                <strong>Games are drawn automatically every hour. Your slips will be processed automatically!</strong>
+                            </p>
+                        </div>
+
+                        <div class="card-content space-y-6">
+                            <!-- Main Numbers -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-3">Select 3 Main Numbers (1-50)</h3>
+                                <div id="main-numbers" class="grid grid-cols-10 gap-2"></div>
+                            </div>
+
+                            <!-- Bonus Numbers -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-3">Select 1 Bonus Number (1-9)</h3>
+                                <div id="bonus-numbers" class="grid grid-cols-9 gap-2 max-w-md"></div>
+                            </div>
+
+                            <div class="max-w-md">
+                                <label for="betAmount" class="label">Bet Amount (R) - Any amount allowed</label>
+                                <input id="betAmount" type="number" step="0.01" min="0.01" value="3.00" class="input mt-1">
+                                <div id="payout-estimate" class="mt-2 p-3 bg-gray-100 rounded-lg text-sm hidden">
+                                    <p class="font-semibold mb-2">Estimated Payouts:</p>
+                                    <p id="main-payout">• 3 Main Numbers: R0.00 (13.33x)</p>
+                                    <p id="bonus-payout">• 3 Main + Bonus: R0.00 (15.67x)</p>
+                                </div>
+                            </div>
+
+                            <!-- Selected Numbers Display -->
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <p><strong>Selected Main Numbers:</strong> <span id="selected-main">None</span></p>
+                                <p><strong>Selected Bonus Number:</strong> <span id="selected-bonus">None</span></p>
+                            </div>
+
+                            <div id="game-error" class="alert alert-error hidden">
+                                <p></p>
+                            </div>
+
+                            <button id="add-slip-btn" class="btn btn-primary w-full" disabled>
+                                Add to Betting Slips - R0.00
+                            </button>
+
+                            <!-- Betting Slips -->
+                            <div id="betting-slips-section" class="space-y-4 hidden">
+                                <h3 class="text-lg font-semibold">Your Betting Slips</h3>
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <p class="text-sm text-blue-700">
+                                        <strong>Auto-Play Enabled:</strong> Your slips will be automatically processed in the next hourly draw.
+                                        <span id="next-auto-draw"></span>
+                                    </p>
+                                </div>
+
+                                <div id="slips-list" class="space-y-4"></div>
+
+                                <div class="flex space-x-4">
+                                    <button id="play-all-btn" class="btn btn-primary flex-1">Play All Slips Now (Manual)</button>
+                                    <button id="clear-all-btn" class="btn btn-outline flex-1">Clear All Slips</button>
+                                </div>
+                            </div>
+
+                            <!-- Game Results -->
+                            <div id="game-results" class="card max-w-4xl mx-auto hidden">
+                                <div class="card-header">
+                                    <h2 class="card-title">Game Results</h2>
+                                    <p id="results-description" class="card-description"></p>
+                                </div>
+                                <div class="card-content space-y-4">
+                                    <div id="results-list" class="space-y-4"></div>
+                                    <div id="total-winnings" class="text-center p-4 bg-gray-100 rounded-lg">
+                                        <p class="text-lg font-semibold">Total Winnings: R0.00</p>
+                                        <p id="winnings-added" class="text-green-600 font-medium hidden">Winnings have been added to your wallet!</p>
+                                    </div>
+                                    <button id="clear-results-btn" class="btn btn-outline w-full">Clear Results</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
